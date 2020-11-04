@@ -5,6 +5,21 @@ import re
 from tqdm import tqdm
 
 
+def rhyme_all(rhymes: list) -> list:
+    result = list()
+    c = 1 # не рифмуем с оригиналом
+    for line1 in tqdm(lines):
+        for line2 in lines[c:]:
+            if line1 == line2:
+                continue
+            vowels1 = re.findall(r'[уеыаоэяиью]', line1, re.IGNORECASE)
+            vowels2 = re.findall(r'[уеыаоэяиью]', line2, re.IGNORECASE)
+            if abs(len(vowels1) - len(vowels2)) < 5 and line1[-3:] == line2[-3:]:
+                result.append([line1, line2])
+        c += 1
+    return result
+
+
 def rhyme_double(rhymes: list, match: int) -> list:
     result = list()
     result.append(choice(rhymes))
@@ -25,9 +40,12 @@ f.close()
 
 lines = list(filter(lambda l: len(l) > 2, lines))
 
-f = codecs.open(str(datetime.utcnow().timestamp()) + '.txt', 'w')
-for i in range(10):
-    print(rhyme_double(lines, 3))
+all_rhymes = rhyme_all(lines)
+
+f = codecs.open(str(datetime.utcnow().timestamp()) + '.txt', 'w', 'utf-8')
+for r in all_rhymes:
+    for l in r:
+        f.write(l + '\n')
 f.close()
 
 
